@@ -3,6 +3,9 @@ package main
 import (
     "net/http"
     "os"
+    "log"
+    "text/template"
+    "path/filepath"
 )
 
 func main() {
@@ -30,14 +33,34 @@ func (d noDir) Open(name string) (http.File, error) {
   return f, nil
 }
 
+type indexData struct {
+  Name string
+  List []string
+}
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "text/html; charset=utf-8 ")
-  w.Write([]byte(`
-    <!doctype html>
-    <title>Chun Rapeepat</title>
-    <link rel=stylesheet href=/-/css/design.css />
-    <p class="red">
-      Static html with GO
-    </p>
-  `))
+  cwd, _ := os.Getwd()
+  t, err := template.ParseFiles(filepath.Join(cwd, "./template/index.html"))
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  }
+
+  data := indexData{
+    Name: "Chun Rapeepat",
+    List: []string{
+      "Steve",
+      "Tauhoo",
+      "Something",
+    },
+  }
+
+  err = t.Execute(w, data)
+
+  if err != nil {
+    log.Println(err)
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  }
 }

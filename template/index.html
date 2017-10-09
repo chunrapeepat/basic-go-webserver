@@ -1,0 +1,14 @@
+<!doctype html>
+<title>Chun Rapeepat</title>
+<link rel=stylesheet href=/-/css/design.css />
+{{.}}
+
+<p class="red">
+  Hello! Your name is {{.Name}}
+</p>
+
+<ul>
+  {{range .List}}
+  <li>{{.}}</li>
+  {{end}}
+</ul>
