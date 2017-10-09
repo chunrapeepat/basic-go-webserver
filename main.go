@@ -1,16 +1,14 @@
 package main
 
-import "net/http"
+import (
+    "net/http"
+    "os"
+)
 
 func main() {
   http.HandleFunc("/", indexHandler)
-  http.HandleFunc("/-/", fileServerHandler)
+  http.Handle("/-/", http.StripPrefix("/-", http.FileServer(noDir{http.Dir("public")})))
   http.ListenAndServe(":8080", nil)
-}
-
-func fileServerHandler(w http.ResponseWriter, r *http.Request) {
-  h := http.FileServer(noDir{http.Dir("public")})
-  http.StripPrefix("/-", h).ServeHTTP(w, r)
 }
 
 type noDir struct {
@@ -18,7 +16,7 @@ type noDir struct {
 }
 
 func (d noDir) Open(name string) (http.File, error) {
-  f, err := Dir.Open(name)
+  f, err := d.Dir.Open(name)
   if err != nil {
     return nil, err
   }
@@ -27,7 +25,7 @@ func (d noDir) Open(name string) (http.File, error) {
     return nil, err
   }
   if stat.IsDir() {
-    return nil, os.ErrNotExist()
+    return nil, os.ErrNotExist
   }
   return f, nil
 }
