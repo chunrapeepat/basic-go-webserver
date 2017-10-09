@@ -5,7 +5,6 @@ import (
     "os"
     "log"
     "text/template"
-    "path/filepath"
 )
 
 func main() {
@@ -38,14 +37,10 @@ type indexData struct {
   List []string
 }
 
+var t = template.Must(template.ParseFiles("./template/index.html"))
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "text/html; charset=utf-8 ")
-  cwd, _ := os.Getwd()
-  t, err := template.ParseFiles(filepath.Join(cwd, "./template/index.html"))
-  if err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-    return
-  }
 
   data := indexData{
     Name: "Chun Rapeepat",
@@ -56,7 +51,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
     },
   }
 
-  err = t.Execute(w, data)
+  err := t.Execute(w, data)
 
   if err != nil {
     log.Println(err)
