@@ -47,7 +47,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
     List: []string{
       "Steve",
       "Tauhoo",
-      "Something",
+      "Change Something",
     },
   }
 
